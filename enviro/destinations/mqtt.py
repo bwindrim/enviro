@@ -26,7 +26,7 @@ def upload_reading(reading):
       mqtt_client = MQTTClient(reading["uid"], server, user=username, password=password, keepalive=60)
     # Now continue with connection and upload
     mqtt_client.connect()
-    mqtt_client.publish(f"enviro/{nickname}", ujson.dumps(reading), retain=True)
+    mqtt_client.publish(f"JBPlants/{nickname}", ujson.dumps(reading), retain=True)
     mqtt_client.disconnect()
     return UPLOAD_SUCCESS
 

@@ -79,7 +79,8 @@ def water(moisture_levels):
     config.moisture_target_b,
     config.moisture_target_c
   ]
-
+  warning = False
+ 
   for i in range(0, 3):
     if moisture_levels[i] < targets[i]:
       # determine a duration to run the pump for
@@ -93,10 +94,12 @@ def water(moisture_levels):
         time.sleep(duration)
         pump_pins[i].value(0)
       else:
+        warning = True
         logging.info(f"  - playing beep")
         for j in range(0, i + 1):
           drip_noise()
         time.sleep(0.5)
+  return warning
 
 def get_sensor_readings(seconds_since_last, is_usb_power):
   # bme280 returns the register contents immediately and then starts a new reading
@@ -109,7 +112,7 @@ def get_sensor_readings(seconds_since_last, is_usb_power):
 
   moisture_levels = moisture_readings()
 
-  water(moisture_levels) # run pumps if needed
+  warn = water(moisture_levels) # run pumps if needed
 
   from ucollections import OrderedDict
   return OrderedDict({
@@ -119,7 +122,8 @@ def get_sensor_readings(seconds_since_last, is_usb_power):
     "luminance": round(ltr_data[BreakoutLTR559.LUX], 2),
     "moisture_a": round(moisture_levels[0], 2),
     "moisture_b": round(moisture_levels[1], 2),
-    "moisture_c": round(moisture_levels[2], 2)
+    "moisture_c": round(moisture_levels[2], 2),
+    "alert": warn
   })
   
 def play_tone(frequency = None):
